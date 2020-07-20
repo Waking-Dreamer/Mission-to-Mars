@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+   <title>Mission to Mars</title>
+   <link
+     rel="stylesheet"
+     href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+   />
+ </head>
+ <body>
+    <div class="container">
+        <!-- Add Jumbotron to Header -->
+        <div class="jumbotron text-center">
+           <h1>Mission to Mars</h1>
+           <!-- There are 3 classes here: tell Bootstrap to use a button (btn), primary color (btn-primary), and it’s large (btn-lg). -->
+           <!-- An <a /> tag is specifically used to link to other things, included the href (hypertext reference). The href is the link to another document or webpage. Here, it is to another component of our page, "/scrape".-->
+           <p><a class="btn btn-primary btn-lg" href="/scrape"
+                       role="button">Scrape New Data</a></p>
+        </div>
+        <!-- Add section for Mars News -->
+        <!-- By adding a class of "row" we’re telling Bootstrap that we’re about to use the grid system and everything within this div will be horizontally aligned. The id "mars-news" helps us select it later if we want to customize it later with CSS. -->
+        <div class="row" id="mars-news">
+            <!-- Add a tag that specifies how many columns this component will be using. The col-md-12 means that we want to use 12 columns scaled to a midsize desktop display.-->
+            <div class="col-md-12">
+                <div class="media">
+                    <div class="media-body">
+                        <h2>Latest Mars News</h2>
+                        <!--When Flask encounters these curly brackets, it then looks to the string (in this case, a variable) stored within them and replaces the variable with the data it holds.-->
+                        <!--By adding class=“media-body” to the <h4> element, we’re again telling Bootstrap to apply specific styling to the header.-->
+                        <h4 class="media-heading">{{mars.news_title}}</h4>
+                        <p>{{ mars.news_paragraph }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Section for Featured Image and Facts table --> 
+        <!--Each new item we’re inserting now is on its own row, so the very first div will have a class of "row."-->
+        <!--We also added an id for later customization: “mars-featured-image”. This is so we can reference it using CSS if we want to fine-tune the appearance later.-->
+        <!-- First level -->
+        <div class="row" id="mars-featured-image">
+            <!-- Second level -->
+            <div class="col-md-8">
+                <h2>Featured Mars Image</h2>
+                <img src="{{mars.featured_image }}" class="img-responsive" alt="Responsive image"/>
+            </div>
+            <div class="col-md-4">
+                <!-- Mars Facts -->
+                <div class="row" id="mars-facts">
+                  <h4>Mars Facts</h4>
+                  <!--The line {{ mars.facts | safe }} accomplishes two tasks: it first references the facts table in the mars document, and it also tells the web browser that this code doesn’t contain anything malicious.-->
+                  {{ mars.facts | safe }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </body>
+      </html>
