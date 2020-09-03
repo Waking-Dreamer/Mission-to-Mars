@@ -20,8 +20,10 @@ def scrape_all():
         "news_paragraph": news_paragraph,
         "featured_image": featured_image(browser),
         "facts": mars_facts(),
+        "hemispheres": mars_hemisphere_images(browser),
         "last_modified": dt.datetime.now()
     }
+    print(data)
 
     # Stop webdriver and return data
     browser.quit()
@@ -132,75 +134,60 @@ def mars_facts():
     # Convert stored df back into HTML format so it can be added to a website
     return df.to_html(classes="table table -striped")
 
-# CHALLENGE  
-# Scrape Mars Hemispheres Images
-def mars_hemisphere_images():
+# CHALLENGE 
+# Reviewed speed run for assistance with function creation
 
-    # Create empty list
-    hemispheres = []
+# Store Mars Hemisphere Image links
+def mars_hemisphere_images(browser):
 
-    # Visit URL
+    #create list
+    hemisphere_image_urls = []
+
+    #Assign mars image website to url variable
     url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
+    #visit site
     browser.visit(url)
 
-    # Click on each of the 4 hemisphere links and store in variable for next step
-    first_click = soup.findAll("div", {"class": itemLink product-item"})
-    first_click.click()
+    #retrieve list of hemisphere links
+    #links = browser.find_by_css('a.product-item h3', wait_time=1)
 
+    #loop through links 
+    for index in range (4):
+        
+        #find element link and click
+        browser.find_by_css('a.product-item h3')[index].click()
+        # Call scrape_hemisphere_images function and store results
+        hemisphere_data = scrape_hemisphere_images(browser.html)
+        #add image and title to list
+        hemisphere_image_urls.append(hemisphere_data)
+        
+        #navigate back for next image link
+        browser.back()
 
-I approached this by using the URL from the "sample" link provided when you click through each hemisphere from the main URL you referenced. Then created a def function for each hemisphere.
-11:59
-For example:
-12:02
-def hemisphere_image1(browser):
-    img_url = 'https://astrogeology.usgs.gov/cache/images/f5e372a36edfa389625da6d0cc25d905_cerberus_enhanced.tif_full.jpg'
-    return img_url
-def hemisphere_image2(browser):
-    img_url = "hemisphere_image2 sample url"
-    return img_url
-def hemisphere_image3(browser):
-    img_url = "hemisphere_image3 sample url"
-    return img_url
-def hemisphere_image4(browser):
-    img_url = "hemisphere_image4 sample url"
-    return img_url
+    return hemisphere_image_urls
 
+#scrape hemisphere images
+def scrape_hemisphere_images(html_text):
+    
+    #parse html text
+    hemispheres_soup = BeautifulSoup(html_text, "html.parser")
 
-
-
-
-
-
-    # Find the more info button by searching for text and click it
-    browser.is_element_present_by_text('more info', wait_time=1)
-    more_info_elem = browser.links.find_by_partial_text('more info')
-    more_info_elem.click()
-
-    # Parse the resulting html with soup
-    html = browser.html
-    img_soup = BeautifulSoup(html, 'html.parser')
-
+    #Try to scrape image and title
     try:
-        # Find the relative image url
-        img_url_rel = img_soup.select_one('figure.lede a img').get("src")
-        # tell BeautifulSoup to look inside the <figure class=”lede” /> tag for an <a /> tag, and then look within 
-        # that <a /> tag for an <img /> tag.
-        # Pull the link of the image by pointing BeautifulSoup to where the image will be, instead of grabbing the URL
-        # directly. This way, when NASA updates its image page, the code will still pull the most recent image.
-
+        hemisphere_title = hemispheres_soup.find("h2", class_="title").get_text()
+        image_link = hemispheres_soup.find("a", text="Sample").get("href")
+    #return nothing if error occcurs
     except AttributeError:
-        return None
+        hemisphere_title = None
+        image_link = None
 
-    # Use the base URL to create an absolute URL
-    img_url = f'https://www.jpl.nasa.gov{img_url_rel}'
-
-    return img_url
-
-
-
-
-
-
+    #create dictionary with stored image and title
+    hemispheres = {
+        "title": hemisphere_title,
+        "image_url": image_link
+    }
+    
+    return hemispheres
 
 # Tell Flask to run
 if __name__ == "__main__":
